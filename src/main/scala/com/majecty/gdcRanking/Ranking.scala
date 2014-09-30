@@ -9,12 +9,15 @@ import scala.slick.lifted.ProvenShape
 
 object Tables {
 
-  class Rankings(tag: Tag) extends Table[(Int, String, Int)](tag, "RANKINGS") {
-    def id = column[Int]("RANKING_ID", O.PrimaryKey)
-    def name = column[String]("RANKER_NAME")
-    def score = column[Int]("SCORE")
+  case class Ranking(appname: String, name: String, score: Int)
 
-    override def * : ProvenShape[(Int, String, Int)] = (id, name, score)
+  class Rankings(tag: Tag) extends Table[Ranking](tag, "RANKINGS") {
+    def appname = column[String]("APP_NAME")
+    def name = column[String]("RANKER_NAME")
+    def score = column[Int]("SCORE", O.Default(0))
+    def pk = primaryKey("pk_ranking", (appname, name))
+
+    def * = (appname, name, score) <> (Ranking.tupled, Ranking.unapply)
   }
 
   val rankings = TableQuery[Rankings]
