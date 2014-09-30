@@ -2,8 +2,19 @@ package com.majecty.gdcRanking
 
 import org.scalatra._
 import scalate.ScalateSupport
+import scala.slick.driver.H2Driver.simple._
+import scala.slick.jdbc.JdbcBackend.Database.dynamicSession
+import Tables._
 
-class GdcRankingServelet extends GdcrankingStack {
+class GdcRankingServlet(db: Database) extends GdcrankingStack {
+
+//  val db: Database
+
+  get("/create-tables") {
+    db withDynSession {
+      rankings.ddl.create
+    }
+  }
 
   get("/") {
     <html>

@@ -28,7 +28,11 @@ object GdcrankingBuild extends Build {
         "ch.qos.logback" % "logback-classic" % "1.1.2" % "runtime",
         "org.eclipse.jetty" % "jetty-webapp" % "9.1.5.v20140505" % "container",
         "org.eclipse.jetty" % "jetty-plus" % "9.1.5.v20140505" % "container",
-        "javax.servlet" % "javax.servlet-api" % "3.1.0"
+        "javax.servlet" % "javax.servlet-api" % "3.1.0",
+        "com.typesafe.slick" %% "slick" % "2.1.0",
+        "com.h2database" % "h2" % "1.3.166",
+        "c3p0" % "c3p0" % "0.9.1.2",
+        "org.slf4j" % "slf4j-nop" % "1.6.4"
       ),
       scalateTemplateConfig in Compile <<= (sourceDirectory in Compile){ base =>
         Seq(
