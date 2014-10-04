@@ -50,13 +50,15 @@ class GdcRankingServlet(db: Database) extends GdcrankingStack {
     db withDynSession {
       formatChecker(params("name"), params("score")) { (name, score) =>
         val appName = params("appname")
-        rankings.insertOrUpdate(Ranking(appName.substring(0, 10), name.substring(0, 10), score))
+
+        rankings += Ranking(Option.empty, appName.take(30), name.take(15), score)
         if (rankings.length.run > 7) {
           val toDelete = rankings.sortBy(_.score.desc).drop(7).list
           toDelete.foreach { deletedRanker => {
-            rankings.filter(ranker => ranker.appname === deletedRanker.appname && ranker.name === deletedRanker.name).delete
+            rankings.filter(ranker => ranker.rank_id === deletedRanker.rank_id).delete
           }}
         }
+
 
         val json = ("status" -> "ok")
         compact(render(json))
@@ -67,7 +69,7 @@ class GdcRankingServlet(db: Database) extends GdcrankingStack {
   get("/app/:appname/rankings") {
     db withDynSession {
       implicit val formats = Serialization.formats(NoTypeHints)
-      val allRankings = rankings.filter(_.appname === params("appname")).sortBy(_.score.desc).list
+      val allRankings = rankings.filter(_.appname === params("appname").take(30)).sortBy(_.score.desc).list
       val json = Extraction.decompose(allRankings)
 
       compact(render(json))
