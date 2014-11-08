@@ -51,7 +51,18 @@ class GdcRankingServlet(db: Database) extends GdcrankingStack {
       formatChecker(params("name"), params("score")) { (name, score) =>
         val appName = params("appname")
 
-        rankings += Ranking(Option.empty, appName.take(30), name.take(15), score)
+        val searched = rankings.filter(ranking => ranking.name === name.take(15)).firstOption
+        searched match {
+          case Some(ranking) =>
+            println (ranking.score)
+            if (score > ranking.score) {
+              rankings.filter(ranking => ranking.name === name.take(15))
+                .map(ranking => ranking.score)
+                .update(score)
+            }
+          case None =>
+            rankings += Ranking(Option.empty, appName.take(30), name.take(15), score)
+        }
         if (rankings.length.run > 7) {
           val toDelete = rankings.sortBy(_.score.desc).drop(7).list
           toDelete.foreach { deletedRanker => {
